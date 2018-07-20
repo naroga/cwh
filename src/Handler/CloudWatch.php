@@ -140,6 +140,11 @@ class CloudWatch extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
+        if (isset($record['context']['processo'])) {
+            $this->stream  = $record['context']['processo'];
+            unset($record['context']['processo']);
+        }
+
         $records = $this->formatRecords($record);
 
         foreach ($records as $record) {
@@ -243,9 +248,7 @@ class CloudWatch extends AbstractProcessingHandler
      */
     private function send(array $entries)
     {
-        if (false === $this->initialized) {
-            $this->initialize();
-        }
+        $this->initialize();
 
         $data = [
             'logGroupName' => $this->group,
